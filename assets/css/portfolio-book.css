@@ -478,6 +478,42 @@
   }
 }
 
+/* Three-up screenshot row (extends Project 2 two-col pattern) */
+.portfolio-book-wrap .three-col {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+@media (min-width: 768px) {
+  .portfolio-book-wrap .three-col {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+.portfolio-book-wrap .three-col .portfolio-dual-img {
+  height: 160px;
+}
+
+.portfolio-book-wrap .portfolio-gh-link {
+  display: inline-block;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--pb-accent);
+  border: 1px solid var(--pb-accent);
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.portfolio-book-wrap .portfolio-gh-link:hover {
+  background: var(--pb-accent);
+  color: #fff;
+  text-decoration: none;
+}
+
 .portfolio-book-wrap .two-col-3 {
   display: grid;
   grid-template-columns: 40px 1fr 1fr;

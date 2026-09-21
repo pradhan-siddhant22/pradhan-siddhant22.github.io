@@ -26,8 +26,8 @@
             </tr>
             <tr>
               <td class="idx-num">4</td>
-              <td class="idx-title">Microgrid Energy Consumption Prediction</td>
-              <td class="idx-dom">Machine Learning · Scikit-Learn</td>
+              <td class="idx-title">Real-Time Waste Classification</td>
+              <td class="idx-dom">Machine Learning · CNN · Edge Deployment</td>
             </tr>
             <tr>
               <td class="idx-num">5</td>
@@ -267,46 +267,86 @@
       
       <div class="p-book-page">
         <div class="proj-num">Project 4</div>
-        <div class="proj-title">Microgrid Energy<br/>Consumption Prediction</div>
-        <div class="proj-sub">Machine Learning — Scikit-Learn · Python · Real-World Energy Dataset</div>
+        <div class="proj-title">Real-Time Waste<br/>Classification</div>
+        <div class="proj-sub">Machine Learning — TensorFlow · MobileNetV2 · TensorFlow Lite · Gradio</div>
         <hr class="gold-rule" />
 
-        <p class="body-text">A regression-based ML pipeline predicting smart microgrid energy consumption from a 3,449-sample real-world dataset combining weather variables with power generation and consumption readings (Liège smart grid). Engineered time-of-day and cloud-coverage features, trained and compared Linear Regression, Random Forest, and SVM regressors, and applied GridSearchCV with 5-fold cross-validation for hyperparameter tuning.</p>
+        <p class="body-text">A phone-based waste classifier that labels any item as Recyclable, Compostable, or Landfill from a single camera photo. A CNN trained via transfer learning on MobileNetV2 over a combined 39,000-image dataset, quantized to TensorFlow Lite and served through a Gradio interface that runs in any mobile browser with no app install. Built after realising the campus waste sorting poster is confusing enough that most people, including me, just guess.</p>
 
         <div class="tag-row">
-          <span class="tag">Python</span><span class="tag">Scikit-Learn</span><span class="tag">Random Forest</span><span class="tag">SVM</span><span class="tag">GridSearchCV</span><span class="tag">Pandas</span><span class="tag">Matplotlib</span>
+          <span class="tag">Python</span><span class="tag">TensorFlow / Keras</span><span class="tag">MobileNetV2</span><span class="tag">Transfer Learning</span><span class="tag">CNN</span><span class="tag">TensorFlow Lite</span><span class="tag">Gradio</span><span class="tag">Google Colab</span>
         </div>
 
-        <img class="portfolio-arch-img" src="{{ base_path }}/images/microgrid-test-rmse.png" alt="Bar chart: test RMSE comparison for microgrid energy prediction models (Lin Reg, Random Forest, SVM, GridSearchCV)" loading="lazy" decoding="async" />
-        <div class="caption">Test RMSE comparison — Random Forest achieves best generalisation at 0.0238</div>
+        <div class="three-col pb-mb-xs">
+          <div>
+            <img class="portfolio-dual-img" src="{{ base_path }}/images/waste-bottle.png" alt="Gradio Waste Classifier: plastic water bottle classified as recyclable" loading="lazy" decoding="async" />
+            <div class="caption">Plastic water bottle classified recyclable at 100% confidence</div>
+          </div>
+          <div>
+            <img class="portfolio-dual-img" src="{{ base_path }}/images/waste-fruit.png" alt="Gradio Waste Classifier: mixed fruit classified as compostable" loading="lazy" decoding="async" />
+            <div class="caption">Mixed fruit classified compostable at 100%, a class that didn't exist in the first version</div>
+          </div>
+          <div>
+            <img class="portfolio-dual-img" src="{{ base_path }}/images/waste-chips.png" alt="Gradio Waste Classifier: chips bag misclassified as recyclable" loading="lazy" decoding="async" />
+            <div class="caption">Chips bag misclassified as recyclable at 99% (flexible plastic belongs in landfill)</div>
+          </div>
+        </div>
 
-        <div class="section-head">Feature Engineering</div>
+        <div class="section-head">The Dataset Problem</div>
         <hr class="rule-thin" />
-        <p class="bullet">Converted time column to minutes-since-midnight (continuous numeric feature)</p>
-        <p class="bullet">Engineered 'clouds' = max(CD, CM, CU) across three cloud-coverage columns</p>
-        <p class="bullet">Dropped correlated/redundant columns (date, time, CD, CM, CU, SNOW) post-analysis</p>
-        <p class="bullet">StandardScaler normalisation applied via Scikit-Learn Pipeline before model training</p>
+        <p class="body-text">TrashNet, the standard benchmark, only covered two of three output categories. Recyclable spanned five material types, landfill had one, and compostable did not exist. The model learned to answer "recyclable" for everything, including a snack bag, a food box, and my room keys, all at near-100% confidence. Two additional Kaggle datasets turned out to have the same shape. The fix was RealWaste: 36,774 images collected in real environments rather than a photo studio, with a biological category that became the compostable class. Combining both datasets and applying 2x class weighting to landfill is what finally made all three categories work.</p>
 
-        <div class="section-head">Model Results</div>
+        <div class="section-head">Training Pipeline</div>
         <hr class="rule-thin" />
+        <table class="plain-table">
+          <tbody>
+            <tr><td>Base</td><td>MobileNetV2, ImageNet weights, depthwise separable convolutions for mobile inference</td></tr>
+            <tr><td>Head</td><td>GlobalAveragePooling → Dropout(0.3) → Dense(3, softmax)</td></tr>
+            <tr><td>Phase 1</td><td>Base frozen, head trained at lr=1e-3, EarlyStopping on val_loss</td></tr>
+            <tr><td>Phase 2</td><td>Top 30 layers unfrozen, fine-tuned at lr=1e-5</td></tr>
+            <tr><td>Augmentation</td><td>Random flip, rotation, zoom, brightness, contrast, train split only</td></tr>
+            <tr><td>Export</td><td>Post-training quantization to .tflite, roughly 4x size reduction</td></tr>
+          </tbody>
+        </table>
+
+        <div class="section-head">Results</div>
+        <hr class="rule-thin" />
+        <!-- TODO: add test accuracy and confusion matrix from the notebook eval -->
         <table>
           <thead>
-            <tr><th>Model</th><th>Train RMSE</th><th>Test RMSE</th><th>Notes</th></tr>
+            <tr><th>Item</th><th>Predicted</th><th>Correct Bin</th><th>Notes</th></tr>
           </thead>
           <tbody>
-            <tr><td>Linear Regression</td><td>0.0368</td><td>0.0343</td><td>Consistent — no overfitting</td></tr>
-            <tr class="highlight"><td>Random Forest</td><td>0.0089</td><td>0.0238</td><td>Best test generalisation</td></tr>
-            <tr><td>SVM (linear)</td><td>0.0662</td><td>0.0660</td><td>Weakest overall</td></tr>
-            <tr><td>GridSearchCV (RF tuned)</td><td>~0.0</td><td>0.0254</td><td>Near-zero train — overfitting signal</td></tr>
+            <tr><td>Plastic water bottle</td><td>recyclable (100%)</td><td>recyclable</td><td>Correct</td></tr>
+            <tr><td>Aluminium can</td><td>recyclable (100%)</td><td>recyclable</td><td>Correct</td></tr>
+            <tr><td>Mixed fruit</td><td>compostable (100%)</td><td>compostable</td><td>Correct</td></tr>
+            <tr><td>Chips bag</td><td>recyclable (99%)</td><td>landfill</td><td>Flexible plastic looks like rigid plastic</td></tr>
+            <tr><td>Plastic grocery bag</td><td>recyclable (88%)</td><td>landfill</td><td>Flexible plastic looks like rigid plastic</td></tr>
+            <tr><td>Greasy pizza box</td><td>recyclable (100%)</td><td>landfill</td><td>Contamination isn't visible as a material feature</td></tr>
           </tbody>
         </table>
 
         <div class="section-head">Key Observations</div>
         <hr class="rule-thin" />
-        <p class="bullet">SWD (solar irradiance) and generation show near-linear correlation — strongest predictive feature</p>
-        <p class="bullet">Consumption peaks at midday, validating the minutes-since-midnight engineered feature</p>
-        <p class="bullet">Random Forest achieves best test RMSE (0.0238) without explicit hyperparameter tuning</p>
-        <p class="bullet">GridSearchCV near-zero training RMSE (2.7e-12) confirms overfitting without bootstrap sampling</p>
+        <p class="bullet">Performs reliably on clean, isolated images of common recyclables and organic waste</p>
+        <p class="bullet">The failure mode is consistent, not random. The model only sees visual features, so it can't separate rigid plastic from flexible film, or clean cardboard from contaminated</p>
+        <p class="bullet">These are the same items the campus poster calls out specifically, which suggests correct sorting needs material context layered on top of vision rather than a bigger model</p>
+
+        <div class="section-head">Code Highlight — Two-Phase Fine-Tuning</div>
+        <hr class="rule-thin" />
+        <div class="code-block"><pre>base_model.trainable = True
+for layer in base_model.layers[:-30]:   # keep general features frozen
+    layer.trainable = False
+
+model.compile(
+    optimizer=tf.keras.optimizers.Adam(learning_rate=1e-5),  # small, careful steps
+    loss='categorical_crossentropy',
+    metrics=['accuracy']
+)</pre></div>
+
+        <p class="pb-block-spaced">
+          <a class="portfolio-gh-link" href="https://github.com/pradhan-siddhant22/waste-classifier" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+        </p>
       </div>
       <div class="page-gap"></div>
 
