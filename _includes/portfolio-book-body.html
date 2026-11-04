@@ -11,31 +11,36 @@
           <tbody>
             <tr>
               <td class="idx-num">1</td>
+              <td class="idx-title">Wrist Assured: Needle-less Hypoglycemia Monitor</td>
+              <td class="idx-dom">Embedded Systems · nRF54L15 · BLE · Senior Design</td>
+            </tr>
+            <tr>
+              <td class="idx-num">2</td>
               <td class="idx-title">Tiny PC</td>
               <td class="idx-dom">Hardware · PCB · 3D Printing</td>
             </tr>
             <tr>
-              <td class="idx-num">2</td>
+              <td class="idx-num">3</td>
               <td class="idx-title">Multithreaded PWM Timestamping System</td>
               <td class="idx-dom">Firmware · Embedded C · BeagleBone</td>
             </tr>
             <tr>
-              <td class="idx-num">3</td>
+              <td class="idx-num">4</td>
               <td class="idx-title">Network Topology Analysis &amp; Routing</td>
               <td class="idx-dom">Algorithms · Networking · Python</td>
             </tr>
             <tr>
-              <td class="idx-num">4</td>
+              <td class="idx-num">5</td>
               <td class="idx-title">Real-Time Waste Classification</td>
               <td class="idx-dom">Machine Learning · CNN · Edge Deployment</td>
             </tr>
             <tr>
-              <td class="idx-num">5</td>
+              <td class="idx-num">6</td>
               <td class="idx-title">Timing Side-Channel Attack &amp; Defense</td>
               <td class="idx-dom">Cybersecurity · Python · Raspberry Pi 5</td>
             </tr>
             <tr>
-              <td class="idx-num">6</td>
+              <td class="idx-num">7</td>
               <td class="idx-title">Video Capture &amp; Image Processing — DE1-SoC</td>
               <td class="idx-dom">FPGA · ARM Cortex-A9 · Embedded Vision</td>
             </tr>
@@ -49,6 +54,72 @@
       
       <div class="p-book-page">
         <div class="proj-num">Project 1</div>
+        <div class="proj-title">Wrist Assured:<br/>Needle-less Hypoglycemia Monitor</div>
+        <div class="proj-sub">Senior Design Project (In Progress) · nRF54L15 · Embedded Firmware · Bluetooth Low Energy · PCB Design</div>
+        <hr class="gold-rule" />
+
+        <p class="body-text">A needle-free wristband that detects hypoglycemia as it happens by sensing the body's adrenaline response to a low: sweating, a racing heart, shaking, and skin cooling. Continuous glucose monitors catch dangerous lows today, but they rely on a sensor inserted under the skin that has to be replaced regularly. I am the Embedded Systems Lead on a four-person senior design team at UMass Amherst, responsible for the wristband firmware, the hardware prototype, and the PCB.</p>
+
+        <div class="tag-row">
+          <span class="tag">nRF54L15</span><span class="tag">Arm Cortex-M33</span><span class="tag">Embedded Firmware</span><span class="tag">Bluetooth Low Energy</span><span class="tag">I2C / SPI</span><span class="tag">Sensor Fusion</span><span class="tag">PCB Design</span><span class="tag">Wearables</span>
+        </div>
+
+        <div class="section-head">How the Band Detects a Low</div>
+        <hr class="rule-thin" />
+        <table class="plain-table">
+          <tbody>
+            <tr><td>Sweating</td><td>Skin conductance rises, measured through skin electrodes and an external ADC</td></tr>
+            <tr><td>Racing heart</td><td>Heart rate rises and heart-rate variability shifts, measured with a PPG sensor</td></tr>
+            <tr><td>Shaking</td><td>Fine hand tremor appears, measured with an IMU</td></tr>
+            <tr><td>Skin cooling</td><td>Skin temperature drops relative to the room, measured with two temperature sensors</td></tr>
+          </tbody>
+        </table>
+
+        <div class="pb-block-spaced">
+          <div class="pb-subsection-title">Hardware Architecture</div>
+          <img class="portfolio-arch-img portfolio-diagram-img" src="{{ base_path }}/images/wrist-assured-hardware-block.png" alt="Hardware block diagram: heart rate, motion, and temperature sensors on an I2C bus to the microcontroller, skin conductance front end and ADC on SPI, external flash on SPI, and a Bluetooth Low Energy link to the phone app" loading="lazy" decoding="async" />
+          <div class="caption">Hardware block diagram: sensors on I2C, skin conductance ADC and flash on SPI, features to the phone over Bluetooth Low Energy</div>
+        </div>
+
+        <div class="section-head">Design Decision: Where the Processing Runs</div>
+        <hr class="rule-thin" />
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">All on the Microcontroller</div>
+            <p class="body-text">No phone needed and the lowest delay, but the model is limited by microcontroller memory, every update needs reflashing, and a wrist alert is easy to sleep through.</p>
+          </div>
+          <div class="card">
+            <div class="card-title">Stream Raw Data to the Phone</div>
+            <p class="body-text">The simplest firmware and full compute on the phone, but sending raw sensor data over Bluetooth all night drains the battery.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Split Processing (Selected)</div>
+          <p class="body-text">The band samples, timestamps, and logs every signal, then sends only extracted features to the phone. Less Bluetooth traffic means longer battery life, the phone can run a larger model that is easy to update, and the phone's alarm can wake the wearer.</p>
+        </div>
+
+        <div class="pb-block-spaced">
+          <div class="pb-subsection-title">Software Architecture</div>
+          <img class="portfolio-arch-img portfolio-diagram-img" src="{{ base_path }}/images/wrist-assured-software-block.png" alt="Software block diagram: wristband firmware for sensor acquisition, timestamping, feature extraction, raw data storage, and Bluetooth; phone app with detection model, alerts, and user interface; offline ML training pipeline" loading="lazy" decoding="async" />
+          <div class="caption">Software block diagram: wristband firmware, phone application, and the offline ML pipeline that trains the detection model</div>
+        </div>
+
+        <div class="section-head">My Role</div>
+        <hr class="rule-thin" />
+        <p class="bullet">Firmware on the nRF54L15: sensor acquisition over I2C and SPI, timestamping, raw data logging to external flash, and the Bluetooth Low Energy link to the phone</p>
+        <p class="bullet">Breadboard prototype of the full sensor system on development boards</p>
+        <p class="bullet">Schematic and layout for a hand-solderable, wristband-sized PCB</p>
+        <p class="bullet">Microcontroller and sensor selection, weighing power draw, tooling, and board space</p>
+
+        <div class="section-head">Status</div>
+        <hr class="rule-thin" />
+        <p class="body-text">In progress. This semester we are bringing up the full sensor system on development boards, logging data, and sending features to a live phone display. The custom wristband PCB follows next semester, and the detection model is being trained and validated on public datasets that pair continuous glucose readings with wrist sensor data.</p>
+      </div>
+      <div class="page-gap"></div>
+
+      
+      <div class="p-book-page">
+        <div class="proj-num">Project 2</div>
         <div class="proj-title">Tiny PC</div>
         <div class="proj-sub"></div>
 
@@ -154,7 +225,7 @@
 
       
       <div class="p-book-page">
-        <div class="proj-num">Project 2</div>
+        <div class="proj-num">Project 3</div>
         <div class="proj-title">Multithreaded PWM<br/>Timestamping System</div>
         <div class="proj-sub">Firmware — BeagleBone Black · Embedded C · pthreads · epoll · GPIO</div>
         <hr class="gold-rule" />
@@ -211,7 +282,7 @@
 
       
       <div class="p-book-page">
-        <div class="proj-num">Project 3</div>
+        <div class="proj-num">Project 4</div>
         <div class="proj-title">Network Topology<br/>Analysis &amp; Routing</div>
         <div class="proj-sub">Algorithms — Python · Dijkstra · BFS/DFS · Prim MST · OSPF Simulation</div>
         <hr class="gold-rule" />
@@ -266,7 +337,7 @@
 
       
       <div class="p-book-page">
-        <div class="proj-num">Project 4</div>
+        <div class="proj-num">Project 5</div>
         <div class="proj-title">Real-Time Waste<br/>Classification</div>
         <div class="proj-sub">Machine Learning — TensorFlow · MobileNetV2 · TensorFlow Lite · Gradio</div>
         <hr class="gold-rule" />
@@ -352,7 +423,7 @@ model.compile(
 
       
       <div class="p-book-page">
-        <div class="proj-num">Project 5</div>
+        <div class="proj-num">Project 6</div>
         <div class="proj-title">Timing Side-Channel<br/>Attack &amp; Defense</div>
         <div class="proj-sub">Cybersecurity — Python · Raspberry Pi 5 · Statistical Timing Analysis</div>
         <hr class="gold-rule" />
@@ -392,7 +463,7 @@ model.compile(
 
       
       <div class="p-book-page">
-        <div class="proj-num">Project 6</div>
+        <div class="proj-num">Project 7</div>
         <div class="proj-title">Video Capture &amp;<br/>Image Processing — DE1-SoC</div>
         <div class="proj-sub">Embedded Systems — ARM Cortex-A9 · Cyclone V FPGA · C · Memory-Mapped I/O</div>
         <hr class="gold-rule" />

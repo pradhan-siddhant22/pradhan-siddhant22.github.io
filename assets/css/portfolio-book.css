@@ -302,6 +302,16 @@
   background: var(--pb-bg-subtle);
 }
 
+/* Block diagrams: full column width, preserve aspect ratio */
+.portfolio-book-wrap .portfolio-diagram-img {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 /* Data tables */
 .portfolio-book-wrap table:not(.cover-idx):not(.arch-table) {
   width: 100%;
